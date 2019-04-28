@@ -1,5 +1,5 @@
 {
-  "name": "notes-app",
+  "name": "weather-app",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "validator": "^10.8.0"
+    "request": "^2.88.0"
   }
 }
