@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const hbs = require('hbs');
 
+const forecast = require('./utils/forecast');
+const geoCode = require('./utils/geocode');
+
 const app = express();
 
 // Define paths and port
@@ -36,6 +39,28 @@ app.get('/help', (req, res) => {
   res.render('help', {
     title: 'Help',
     name: 'Lautaro',
+  });
+});
+
+app.get('/weather', (req, res)=> {
+  const { address } = req.query;
+
+  if (!address) {
+    return res.send({ error: 'No address provided' });
+  }
+
+  geoCode(address, (error, { latitude, longitude, location } = {}) => {
+    if (error) {
+      return res.send({ error });
+    }
+
+    forecast(longitude, latitude, (error, data) => {
+      if (error)  {
+        return res.send({ error });
+      }
+
+      return res.send({ data, location });
+    });
   });
 });
 
