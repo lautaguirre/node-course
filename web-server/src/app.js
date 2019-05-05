@@ -6,12 +6,12 @@ const forecast = require('./utils/forecast');
 const geoCode = require('./utils/geocode');
 
 const app = express();
+const port = process.env.PORT || 3001;
 
 // Define paths and port
 const publicDirectoryPath = path.join(__dirname, '../public');
 const viewsPath = path.join(__dirname, '../templates/views');
 const partialsPath = path.join(__dirname, '../templates/partials');
-const port = 3001;
 
 // Template engine set up
 app.set('view engine', 'hbs');

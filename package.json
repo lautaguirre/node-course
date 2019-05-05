@@ -1,0 +1,19 @@
+{
+  "name": "course",
+  "version": "1.0.0",
+  "description": "node course",
+  "main": "index.js",
+  "scripts": {
+    "start": "node web-server/src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lautaguirre/node-course.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lautaguirre/node-course/issues"
+  },
+  "homepage": "https://github.com/lautaguirre/node-course#readme"
+}
