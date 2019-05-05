@@ -4,7 +4,9 @@
   "description": "node course",
   "main": "index.js",
   "scripts": {
-    "start": "node web-server/src/app.js"
+    "start": {
+      "postisntall": "cd web-server && npm install && node src/app.js"
+    }
   },
   "repository": {
     "type": "git",
