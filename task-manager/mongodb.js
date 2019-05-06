@@ -10,19 +10,11 @@ MongoClient.connect(connectionUrl, { useNewUrlParser: true }, (error, client) =>
 
   const db = client.db(databaseName);
 
-  db.collection('tasks').findOne({ _id: new ObjectID('5ccf7806185cee3c5003f182') }, (error, result) => {
-    if (error) {
-      return console.log('Fail');
-    }
-
-    console.log(result);
-  });
-
-  db.collection('tasks').find({ completed: false }).toArray((error, res) => {
-    if (error) {
-      return console.log(error);
-    }
-
+  db.collection('tasks').deleteOne({
+    description: 'Find my cat'
+  }).then((res) => {
     console.log(res);
+  }).catch((error) => {
+    console.log(error);
   });
 });
