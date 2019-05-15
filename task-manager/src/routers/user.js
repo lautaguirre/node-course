@@ -9,9 +9,24 @@ router.post('/', async (req, res) => {
   try {
     await user.save();
 
-    return res.status(201).send(user);
+    const token = await user.generateAuthToken();
+
+    return res.status(201).send({ user, token });
   } catch (error) {
     return res.status(500).send(error.message);
+  }
+});
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findByCredentials(email, password);
+    const token = await user.generateAuthToken();
+
+    res.send({ user, token});
+  } catch (e) {
+    res.status(500).send(e.message);
   }
 });
 
