@@ -61,24 +61,7 @@ router.get('/me', authMiddleware, async (req, res) => {
     return res.send(req.user);
 });
 
-router.get('/:id', async (req, res) => {
-  const _id = req.params.id;
-
-  try {
-    const queryRes = await User.findById(_id);
-
-    if (!queryRes) {
-      return res.status(404).send();
-    }
-
-    return res.send(queryRes);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send(error.message);
-  }
-});
-
-router.patch('/:id', async (req, res) => {
+router.patch('/me', authMiddleware, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['name', 'email', 'password', 'age'];
   const isValidOperation = updates.every((el) => allowedUpdates.includes(el));
@@ -88,33 +71,21 @@ router.patch('/:id', async (req, res) => {
   }
 
   try {
-    const user = await User.findById(req.params.id);
+    updates.forEach((update) => req.user[update] = req.body[update]);
 
-    // const queryRes = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    await req.user.save();
 
-    if (!user) {
-      return res.status(404).send();
-    }
-
-    updates.forEach((update) => user[update] = req.body[update]);
-
-    await user.save();
-
-    return res.send(user);
+    return res.send(req.user);
   } catch (e) {
     return res.status(400).send(e.message);
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/me', authMiddleware, async (req, res) => {
   try {
-    const queryRes = await User.findByIdAndDelete(req.params.id);
+    await req.user.remove();
 
-    if (!queryRes) {
-      return res.status(404).send();
-    }
-
-    return res.send(queryRes);
+    return res.send(req.user);
   } catch (e) {
     return res.status(500).send(e.message);
   }
