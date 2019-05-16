@@ -25,9 +25,35 @@ router.post('/login', async (req, res) => {
     const user = await User.findByCredentials(email, password);
     const token = await user.generateAuthToken();
 
-    res.send({ user, token});
+    return res.send({ user, token});
   } catch (e) {
-    res.status(500).send(e.message);
+    return res.status(500).send(e.message);
+  }
+});
+
+router.post('/logout', authMiddleware, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter((token) => {
+      return token.token !== req.token;
+    });
+
+    await req.user.save();
+
+    return res.send();
+  } catch (e) {
+    return res.status(500).send(e.message);
+  }
+});
+
+router.post('/logoutAll', authMiddleware, async (req, res) => {
+  try {
+    req.user.tokens = [];
+
+    await req.user.save();
+
+    return res.send();
+  } catch (e) {
+    return res.status(500).send(e.message);
   }
 });
 
