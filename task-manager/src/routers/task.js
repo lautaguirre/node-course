@@ -1,10 +1,11 @@
 const express = require('express');
 const Task = require('../models/task');
+const authMiddleware = require('../middleware/auth');
 
 const router = new express.Router();
 
-router.post('/', async (req, res) => {
-  const task = new Task(req.body);
+router.post('/', authMiddleware, async (req, res) => {
+  const task = new Task({ ...req.body, owner: req.user._id });
 
   try {
     await task.save();
@@ -15,34 +16,38 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    const queryRes = await Task.find({});
+    const task = await Task.find({ owner: req.user._id });
 
-    return res.send(queryRes);
+    // ALTERNATIVE
+    // await req.user.populate('tasks').execPopulate();
+    // return res.send(req.user.tasks);
+
+    return res.send(task);
   } catch (error) {
     return res.status(500).send(error.message);
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', authMiddleware, async (req, res) => {
   const _id = req.params.id;
 
   try {
-    const queryRes = await Task.findById(_id);
+    const task = await Task.findOne({ _id, owner: req.user._id });
 
-    if (!queryRes) {
+    if (!task) {
       return res.status(404).send();
     }
 
-    return res.send(queryRes);
+    return res.send(task);
   } catch (error) {
     return res.status(500).send(error.message);
   }
 });
 
 
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', authMiddleware, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['completed', 'description'];
   const isValidOperation = updates.every((el) => allowedUpdates.includes(el));
@@ -52,7 +57,7 @@ router.patch('/:id', async (req, res) => {
   }
 
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findOne({ _id: req.params.id, owner: req.user._id });
 
     // const queryRes = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 
@@ -70,15 +75,15 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const queryRes = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
 
-    if (!queryRes) {
+    if (!task) {
       return res.status(404).send();
     }
 
-    return res.send(queryRes);
+    return res.send(task);
   } catch (e) {
     return res.status(500).send(e.message)
   }
