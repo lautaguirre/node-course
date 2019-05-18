@@ -17,14 +17,36 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 router.get('/', authMiddleware, async (req, res) => {
+  const { completed, limit, skip, sortBy } = req.query;
+  let match = {};
+  let sort = {};
+
+  if (completed === 'true' || completed === 'false') {
+    match.completed = completed === 'true';
+  }
+
+  if (sortBy) {
+    const parts = sortBy.split(':');
+
+    sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+  }
+
   try {
-    const task = await Task.find({ owner: req.user._id });
+    await req.user.populate({
+      path: 'tasks',
+      match,
+      options: {
+        limit: parseInt(limit),
+        skip: parseInt(skip),
+        sort,
+      },
+    }).execPopulate();
 
     // ALTERNATIVE
-    // await req.user.populate('tasks').execPopulate();
-    // return res.send(req.user.tasks);
+    // const task = await Task.find({ owner: req.user._id });
+    // return res.send(task);
 
-    return res.send(task);
+    return res.send(req.user.tasks);
   } catch (error) {
     return res.status(500).send(error.message);
   }
