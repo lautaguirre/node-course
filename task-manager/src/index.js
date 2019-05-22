@@ -13,16 +13,6 @@ const port = process.env.PORT || 3001;
 // Parse to json
 app.use(express.json());
 
-
-const multer = require('multer');
-const upload = multer({
-  dest: 'images'
-});
-app.post('/upload', upload.single('upload'), (req, res) => {
-  res.send();
-});
-
-
 // Routes
 app.use('/users', userRouter);
 app.use('/tasks', taskRouter);
