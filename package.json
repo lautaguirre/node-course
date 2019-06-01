@@ -4,7 +4,7 @@
   "description": "node course",
   "main": "index.js",
   "scripts": {
-    "start": "cd task-manager && npm install && node src/index.js"
+    "start": "cd chat-app && npm install && node src/index.js"
   },
   "repository": {
     "type": "git",
